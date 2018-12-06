@@ -132,7 +132,7 @@ class EnvFile:
             self.set_configs_path()
 
         for env_name in self.env_list:
-            self.env_content[env_name] = self.load_config(self.configs_path + env_name + '.config')
+            self.env_content[env_name] = self.load_config(join(self.configs_path, env_name + '.config'))
 
     def set_configs_path(self):
         configs_path_questions = [
