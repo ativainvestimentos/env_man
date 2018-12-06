@@ -4,6 +4,7 @@ import os
 import platform
 import string
 import sys
+from os.path import join
 from pprint import pprint
 from PyInquirer import style_from_dict, Token, prompt
 import re
@@ -107,10 +108,9 @@ class EnvFile:
 
     def save(self):
         for env_name in self.env_list:
-            self.save_config(self.configs_path
-                             + env_name + '.config', self.env_content[env_name])
+            self.save_config(join(self.configs_path, env_name + '.config'), self.env_content[env_name])
 
-        self.save_config(self.env_root + 'env-man.config', self.app_config)
+        self.save_config(join(self.env_root, 'env-man.config'), self.app_config)
 
     @staticmethod
     def save_config(file_path, content):
