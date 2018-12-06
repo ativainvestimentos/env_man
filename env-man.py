@@ -157,15 +157,11 @@ class EnvFile:
 
             if prompt(confirm_path_questions, style=self.style)['confirm_path']:
                 self.configs_path = self.env_root
-                pprint('Default')
-                pprint(self.configs_path)
                 self.app_config["CONFIGS_PATH"] = self.configs_path
                 self.save_config(self.env_root + 'env-man.config', self.app_config)
             else:
                 print('Please set the configs path directory using (ChangeConfigsDirectory) menu option')
         else:
-            pprint('Setado')
-            pprint(self.configs_path)
             self.app_config["CONFIGS_PATH"] = self.configs_path
             self.save_config(self.env_root + 'env-man.config', self.app_config)
 
