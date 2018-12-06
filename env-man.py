@@ -17,6 +17,24 @@ class EnvFile:
         self.current_env = ''
         self.env_list = []
         self.env_root = ''
+        self.configs_path = ''
+        self.style = None
+
+    @property
+    def style(self):
+        return self.style
+
+    @style.setter
+    def configs_path(self, value):
+        self.style = value
+
+    @property
+    def configs_path(self):
+        return self.configs_path
+
+    @configs_path.setter
+    def configs_path(self, value):
+        self.configs_path = value
 
     @property
     def env_root(self):
@@ -105,8 +123,44 @@ class EnvFile:
         self.current_env = self.app_config["CURRENT_ENVIRONMENT"]
         self.env_list = self.app_config["ENVIRONMENT_LIST"]
 
+        if 'CONFIGS_PATH' in self.app_config.keys():
+            self.configs_path = self.app_config['CONFIGS_PATH']
+        else:
+            self.configs_path = ''
+
+        if self.configs_path == '':
+            self.set_configs_path()
+
         for env_name in self.env_list:
             self.env_content[env_name] = self.load_config(self.env_root + env_name + '.config')
+
+    def set_configs_path(self):
+        configs_path_questions = [
+            {
+                'type': 'input',
+                'name': 'configs_path',
+                'message': 'Inform the path for Environment Configuration Files:'
+            }
+        ]
+
+        self.configs_path = prompt(configs_path_questions, style=self.style)['configs_path']
+
+        if self.configs_path == '':
+            confirm_path_questions = [
+                {
+                    'type': 'confirm',
+                    'name': 'confirm_path',
+                    'message': 'Should I set default path? (' + self.env_root + ')',
+                    'default': False
+                }
+            ]
+
+            if prompt(confirm_path_questions, style=self.style)['confirm_path']:
+                self.app_config["CONFIGS_PATH"] = self.env_root
+                pprint(self.app_config)
+            else:
+                print('Please set the configs path directory using (ChangeConfigsDirectory) menu option')
+
 
     @staticmethod
     def load_config(file_path):
@@ -195,7 +249,7 @@ def main(argv):
     env_man.load()
     current_os = platform.system()
 
-    style = style_from_dict({
+    env_man.style = style_from_dict({
         Token.QuestionMark: '#E91E63 bold',
         Token.Selected: '#673AB7 bold',
         Token.Instruction: '',  # default
@@ -215,7 +269,7 @@ def main(argv):
                 'name': 'opmode',
                 'message': 'Choose the action:',
                 'choices': ['ReadEnv', 'ImportEnv', 'ExportEnv', 'SetEnvironment',
-                            'ClearEnvironment', 'Save', 'Reload', 'Exit']
+                            'ClearEnvironment', 'Save', 'Reload', 'ChangeConfigsDirectory', 'Exit']
             }
         ]
 
@@ -236,24 +290,24 @@ def main(argv):
             }
         ]
 
-        op_mode = prompt(op_mode_questions, style=style)
+        op_mode = prompt(op_mode_questions, style=env_man.style)
         chosen_op_mode = op_mode['opmode']
 
         while chosen_op_mode != 'Exit':
             # pprint(op_mode['opmode'])
 
             if chosen_op_mode == 'ReadEnv':
-                env_path = prompt(path_questions, style=style)['path']
+                env_path = prompt(path_questions, style=env_man.style)['path']
                 pprint(env_man.read(env_path))
 
             elif chosen_op_mode == 'ImportEnv':
-                env_path = prompt(path_questions, style=style)['path']
-                env_name = prompt(env_questions, style=style)['env'].lower()
+                env_path = prompt(path_questions, style=env_man.style)['path']
+                env_name = prompt(env_questions, style=env_man.style)['env'].lower()
                 env_man.import_file(env_path, env_name)
 
             elif chosen_op_mode == 'ExportEnv':
-                env_path = prompt(path_questions, style=style)['path']
-                env_name = prompt(env_questions, style=style)['env'].lower()
+                env_path = prompt(path_questions, style=env_man.style)['path']
+                env_name = prompt(env_questions, style=env_man.style)['env'].lower()
                 env_man.export_file(env_name, env_path)
 
             elif chosen_op_mode == 'Save':
@@ -263,13 +317,16 @@ def main(argv):
                 env_man.load()
 
             elif chosen_op_mode == 'SetEnvironment':
-                env_name = prompt(env_questions, style=style)['env'].lower()
+                env_name = prompt(env_questions, style=env_man.style)['env'].lower()
                 env_man.set_variables(env_name, current_os)
 
             elif chosen_op_mode == 'ClearEnvironment':
                 env_man.clear_variables(current_os)
 
-            op_mode = prompt(op_mode_questions, style=style)
+            elif chosen_op_mode == 'ChangeConfigsDirectory':
+                env_man.set_configs_path()
+
+            op_mode = prompt(op_mode_questions, style=env_man.style)
             chosen_op_mode = op_mode['opmode']
 
 
