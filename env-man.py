@@ -107,7 +107,7 @@ class EnvFile:
 
     def save(self):
         for env_name in self.env_list:
-            self.save_config(self.env_root
+            self.save_config(self.configs_path
                              + env_name + '.config', self.env_content[env_name])
 
         self.save_config(self.env_root + 'env-man.config', self.app_config)
@@ -132,7 +132,7 @@ class EnvFile:
             self.set_configs_path()
 
         for env_name in self.env_list:
-            self.env_content[env_name] = self.load_config(self.env_root + env_name + '.config')
+            self.env_content[env_name] = self.load_config(self.configs_path + env_name + '.config')
 
     def set_configs_path(self):
         configs_path_questions = [
@@ -157,7 +157,7 @@ class EnvFile:
 
             if prompt(confirm_path_questions, style=self.style)['confirm_path']:
                 self.app_config["CONFIGS_PATH"] = self.env_root
-                pprint(self.app_config)
+                self.save_config(self.env_root + 'env-man.config', self.app_config)
             else:
                 print('Please set the configs path directory using (ChangeConfigsDirectory) menu option')
 
