@@ -260,7 +260,7 @@ def main(argv):
         Token.Question: '',
     })
 
-    if len(argv) > 1 and argv[0] == 'gen':
+    if len(argv) > 1 and argv[0] == 'set':
         env_name = argv[1]
         env_man.set_variables(env_name, current_os)
     else:
