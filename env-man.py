@@ -29,7 +29,7 @@ class EnvFile:
         return self.style
 
     @style.setter
-    def configs_path(self, value):
+    def style(self, value):
         self.style = value
 
     @property
